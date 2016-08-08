@@ -1,0 +1,30 @@
+.footer {
+	padding: 20px;
+	background: #337;
+	height: auto;
+	color: #fff;
+	
+	a {
+		color: #ccc;
+		margin-top: 25px;
+		margin-right: 20px;
+		font-size: 18px;
+		
+		&:hover {
+			color: #c33;
+		}
+	}
+	
+	.social {
+		text-align: right;
+		
+		a {
+			color: #cc7;
+			margin: 0 5px;
+			
+			&:hover {
+				color: #dd3;
+			}
+		}
+	}
+}

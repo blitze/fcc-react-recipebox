@@ -1,0 +1,20 @@
+.recipe {
+	border: 2px solid #ccc;
+	
+	.row {
+		margin-bottom: 0;
+	}
+}
+
+.directions {
+	padding: 10px;
+	
+	.section-title {
+		text-align: center;
+	}
+}
+
+.ingredients {
+	@extend .directions;
+	background-color: #eee;
+}

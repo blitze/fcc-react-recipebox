@@ -1,0 +1,18 @@
+.card {
+	overflow: hidden;
+	height: auto;
+	margin-bottom: 15px;
+
+	.context-menu {
+		float: right;
+	}
+	
+	.recipe-title {
+		color: #fff;
+		font-size: 1.2rem;
+		line-height: 10px;
+		&:hover {
+			color: #eec;
+		}
+	}
+}
