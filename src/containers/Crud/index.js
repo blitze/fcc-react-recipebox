@@ -1,77 +1,52 @@
-import React, { Component, PropTypes } from 'react';
-import { bindActionCreators } from 'redux';
+import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { browserHistory } from 'react-router';
+import { push } from 'react-router-redux';
 import Modal from '../../components/Modal';
 import FormControl from '../FormControl';
-import * as actions from '../HomePage/actions';
+import { saveRecipe, deleteRecipe, submitForm, hideModal } from '../HomePage/actions';
 
-class Crud extends Component {
-	constructor(props) {
-		super(props);
+const Crud = (props) => {
+	/**
+	 * Show add/edit form
+	 */
+	if (props.showForm) {
+		return (
+			<Modal
+				handleClose={props.onHideModal}
+				handleSubmit={props.onModalSubmit}
+				title={props.recipe !== undefined ? 'Edit Recipe' : 'Add Recipe'}
+				open={props.showForm}
+				submitBtnLabel="Save"
+				className="s12"
+			>
+				<FormControl
+					recipe={props.recipe}
+					submitForm={props.submitForm}
+					onSubmit={props.onFormSubmit}
+				/>
+			</Modal>
+		);
 
-		this.onFormSubmit = this.onFormSubmit.bind(this);
-		this.onModalConfirm = this.onModalConfirm.bind(this);
-		this.onModalSubmit = this.onModalSubmit.bind(this);
+	/**
+	 * show confirm delete modal
+	 */
+	} else if (props.confirmDelete && props.recipeId) {
+		return (
+			<Modal
+				handleClose={props.onHideModal}
+				handleSubmit={props.onModalConfirm(props.recipeId)}
+				title="Confirm Delete"
+				open={props.confirmDelete}
+				submitBtnLabel="Confirm"
+			>
+				<p>Are you sure you want to delete this recipe?</p>
+				<i>{props.recipe.title}</i>
+			</Modal>
+		);
+	} else {
+		return null;
 	}
-	onModalConfirm() {
-		this.props.actions.deleteRecipe(this.props.recipeId);
-		browserHistory.push("/");
-	}
-	onModalSubmit() {
-		this.props.actions.submitForm();
-	}
-	onFormSubmit(recipe) {
-		// go to homepage if we're adding new
-		if (!recipe.id) {
-			browserHistory.push("/");
-		}
-
-		this.props.actions.saveRecipe(recipe);
-	}
-	render() {
-		/**
-		 * Show add/edit form
-		 */
-		if (this.props.showForm) {
-			return (
-				<Modal
-					handleClose={this.props.actions.hideModal}
-					handleSubmit={this.onModalSubmit}
-					title={this.props.recipe !== undefined ? 'Edit Recipe' : 'Add Recipe'}
-					open={this.props.showForm}
-					submitBtnLabel="Save"
-					className="s12"
-				>
-					<FormControl
-						recipe={this.props.recipe}
-						submitForm={this.props.submitForm}
-						onSubmit={this.onFormSubmit}
-					/>
-				</Modal>
-			);
-
-		/**
-		 * show confirm delete modal
-		 */
-		} else if (this.props.confirmDelete && this.props.recipeId) {
-			return (
-				<Modal
-					handleClose={this.props.actions.hideModal}
-					handleSubmit={this.onModalConfirm}
-					title="Confirm Delete"
-					open={this.props.confirmDelete}
-					submitBtnLabel="Confirm"
-				>
-					<p>Are you sure you want to delete this recipe?</p>
-					<i>{this.props.recipe.title}</i>
-				</Modal>
-			);
-		} else {
-			return null;
-		}
-	}
-}
+};
 
 Crud.propTypes = {
 	showForm: PropTypes.bool.isRequired,
@@ -79,7 +54,10 @@ Crud.propTypes = {
 	confirmDelete: PropTypes.bool.isRequired,
 	recipeId: PropTypes.string,
 	recipe: PropTypes.object,
-	actions: PropTypes.object.isRequired,
+	onModalConfirm: PropTypes.func.isRequired,
+	onModalSubmit: PropTypes.func.isRequired,
+	onFormSubmit: PropTypes.func.isRequired,
+	onHideModal: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state) => ({
@@ -91,7 +69,20 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-	actions: bindActionCreators(actions, dispatch)
+	onModalConfirm: (id) => () => {
+		dispatch(deleteRecipe(id));
+		dispatch(push("/"));
+	},
+	onModalSubmit: () => dispatch(submitForm()),
+	onHideModal: () => dispatch(hideModal()),
+	onFormSubmit: (recipe) => {
+		// go to homepage if we're adding new
+		if (!recipe.id) {
+			dispatch(push("/"));
+		}
+
+		dispatch(saveRecipe(recipe));
+	}
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Crud);
