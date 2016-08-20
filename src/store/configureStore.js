@@ -5,7 +5,7 @@ import recipes from './data/recipes';
 import { loadState, saveState } from './localStorage';
 import rootReducer from './reducers';
 
-const devtools = window.devToolsExtension || (f => f);
+const devtools = window.devToolsExtension || (() => f => f);
 
 export default function configureStore(history, initialState) {
 	const middlewares = [
